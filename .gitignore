@@ -1,33 +1,113 @@
-HELP.md
+# ========================================
+# ENTORNO Y CONFIGURACIÓN
+# ========================================
+.env
+.env.local
+.env.*.local
+application-*.properties
+application-*.yml
+
+# ========================================
+# COMPILACIÓN
+# ========================================
+# Maven
 target/
-.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.mvn/timing.properties
+
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# ========================================
+# LOGS Y TEMPORALES
+# ========================================
+logs/
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# ========================================
+# SISTEMA OPERATIVO
+# ========================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========================================
+# IDES
+# ========================================
+# Eclipse/STS
+.classpath
+.project
+.settings/
+.apt_generated
+.sts4-cache
+bin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+
+# ========================================
+# BASES DE DATOS LOCALES
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+*.h2.db
+*.mv.db
+
+# ========================================
+# SEGURIDAD (opcional pero recomendado)
+# ========================================
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+
+# ========================================
+# ARCHIVOS DE DEPLOYMENT
+# ========================================
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# ========================================
+# COBERTURA Y REPORTES
+# ========================================
+coverage/
+*.cover
+*.gcov
+
+# ========================================
+# EXCEPCIONES
+# ========================================
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
+!**/.gitkeep
