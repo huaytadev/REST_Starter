@@ -17,7 +17,7 @@ public class OpenApiConfig {
 
         Contact contact = new Contact()
                 .name("REST Starter API")
-                .email("contact@example.com");
+                .email("huaytadev@gmail.com");
 
         Info info = new Info()
                 .title("REST Starter API")
