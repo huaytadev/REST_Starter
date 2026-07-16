@@ -252,11 +252,17 @@ mvn test
 This project intentionally uses:
 
 -Layered Architecture
+
 -DTO Pattern
+
 -Manual Mapping
+
 -Spring Specifications
+
 -Global Exception Handler
+
 -ResponseEntity
+
 -Validation API
 
 The goal is to demonstrate clean backend development practices without introducing unnecessary complexity.
