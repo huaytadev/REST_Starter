@@ -1,4 +1,4 @@
-# REST Starter API
+# REST Starter
 
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.7-brightgreen)
@@ -47,6 +47,34 @@ This project was developed as part of a backend portfolio to showcase clean arch
 | Swagger / OpenAPI | 3 |
 | Lombok | Latest |
 | Docker | Latest |
+
+---
+
+# Highlights
+
+✔ Clean architecture
+
+✔ DTO pattern
+
+✔ Global exception handling
+
+✔ Validation
+
+✔ Pagination
+
+✔ Sorting
+
+✔ Dynamic Specifications
+
+✔ Swagger
+
+✔ Unit testing
+
+✔ Docker
+
+✔ Environment variables
+
+✔ Ready for cloud deployment
 
 ---
 
@@ -112,7 +140,8 @@ Each layer has a single responsibility.
 ---
 
 # Environment Variables
-Created a file nameed:
+Create a file named `.env` in the project root:
+
 ```
 .env
 ```
@@ -132,7 +161,7 @@ SPRING_DATASOURCE_PASSWORD=password
 ---
 
 # Running with Docker
-Start MySQL:
+Start the local MySQL container:
 ```git
 docker compose up -d
 ```
@@ -179,7 +208,25 @@ Run:
 mvn spring-boot:run
 ```
 
-Or simply open the project in Eclipse IDE and run the application as a Spring Boot App.
+
+**Or simply open the project in Eclipse IDE and run the application as a Spring Boot App.**
+
+
+The API will be available at:
+```
+http://localhost:8080
+```
+
+Swagger UI:
+```
+http://localhost:8080/swagger-ui.html
+```
+
+or
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
 
 ---
 # API Endpoints
@@ -222,7 +269,7 @@ Filters can be combined.
 
 | Direction | Method | Endpoint |
 | --- | --- | --- |
-| Ascending | GET | /api/products?page=0&size=10 |
+| Ascending | GET | /api/products?sort=price,asc |
 | Descending | GET | /api/products?sort=price,desc |
 
 ---
@@ -251,42 +298,77 @@ mvn test
 
 This project intentionally uses:
 
--Layered Architecture
+- Layered Architecture
 
--DTO Pattern
+- DTO Pattern
 
--Manual Mapping
+- Manual Mapping
 
--Spring Specifications
+- Spring Specifications
 
--Global Exception Handler
+- Global Exception Handler
 
--ResponseEntity
+- ResponseEntity
 
--Validation API
+- Validation API
 
-The goal is to demonstrate clean backend development practices without introducing unnecessary complexity.
+The objective was to keep the project simple while following production-ready practices commonly used in Spring Boot applications.
 
 ---
 
-# Deployment
+## Railway Deployment
 
-The application is intended to be deployed on Render.
+To deploy this application on Railway:
 
-Public endpoints will include:
-```git
-/
+1. Create a new **MySQL** service.
+2. Create a new **Java** service connected to this repository.
+3. Configure the following environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| `DB_URL` | JDBC connection URL |
+| `DB_USERNAME` | Database username |
+| `DB_PASSWORD` | Database password |
+
+Example:
+
+```text
+DB_URL=jdbc:mysql://mysql.railway.internal:3306/railway
+DB_USERNAME=root
+DB_PASSWORD=your_password
 ```
 
-Swagger
-```git
-/swagger-ui/index.html
+The application reads these values from `application.properties`, allowing the same build to run locally or in production without code changes.
+
+After deployment the API documentation will be available at:
+
+```
+https://YOUR_APP.up.railway.app/swagger-ui.html
 ```
 
-OpenAPI
-```git
-/v3/api-docs
+or
+
 ```
+https://YOUR_APP.up.railway.app/swagger-ui/index.html
+```
+
+depending on the Springdoc version.
+
+This project already includes reverse proxy support:
+
+```properties
+server.forward-headers-strategy=framework
+```
+
+This configuration allows Spring Boot to correctly detect HTTPS when running behind Railway's reverse proxy.
+
+---
+
+# Project Goals
+
+This project was created to demonstrate a solid foundation for building REST APIs with Spring Boot.
+
+Rather than focusing on complex business rules, the goal is to showcase clean architecture, maintainability and commonly adopted backend practices.
 
 ---
 
