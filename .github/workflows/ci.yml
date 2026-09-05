@@ -35,9 +35,9 @@ jobs:
       - name: Run tests
         run: ./mvnw test
 
-      - name: Build application
-        run: ./mvnw clean package -DskipTests
-
       - name: Mostrar logs de tests
         if: failure()
         run: cat target/surefire-reports/*.txt
+
+      - name: Build application
+        run: ./mvnw clean package -DskipTests
