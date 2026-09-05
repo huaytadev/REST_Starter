@@ -4,8 +4,18 @@
 .env
 .env.local
 .env.*.local
+
+# Ignorar archivos de configuración de producción y entornos reales
 application-*.properties
 application-*.yml
+
+# NO ignorar los de test y desarrollo
+!application-test.properties
+!application-test.yml
+!application-dev.properties
+!application-dev.yml
+!application-local.properties
+!application-local.yml
 
 # ========================================
 # COMPILACIÓN
