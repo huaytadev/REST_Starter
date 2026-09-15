@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rest_starter.dto.request.CreateProductRequest;
+import com.rest_starter.dto.request.PatchProductRequest;
 import com.rest_starter.dto.request.ProductFilterRequest;
 import com.rest_starter.dto.request.UpdateProductRequest;
 import com.rest_starter.dto.response.PageResponse;
@@ -27,6 +28,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -48,7 +50,8 @@ public class ProductController {
     @GetMapping("/{id}")
     @Operation(summary = "Find product by ID", description = "Returns a product by its ID")
     public ResponseEntity<ProductResponse> findById(
-    		@Parameter(description = "Product ID", example = "1")
+    		@Parameter(description = "Product ID. Must be greater than 0", example = "1")
+    		@Positive(message = "Product ID must be greater than 0")
     		@PathVariable Long id) {
         ProductResponse response = productService.findById(id);
 
@@ -61,7 +64,7 @@ public class ProductController {
             description = "Returns a paginated list of products. Supports filters, pagination and sorting."
     )
     public ResponseEntity<PageResponse<ProductResponse>> findAll(
-            ProductFilterRequest filter,
+            @Valid ProductFilterRequest filter,
             @ParameterObject
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
@@ -73,7 +76,8 @@ public class ProductController {
     @PutMapping("/{id}")
     @Operation(summary = "Update product", description = "Updates all editable fields of an existing product")
     public ResponseEntity<ProductResponse> update(
-    		@Parameter(description = "Product ID", example = "1")
+    		@Parameter(description = "Product ID. Must be greater than 0", example = "1")
+    		@Positive(message = "Product ID must be greater than 0")
             @PathVariable Long id,
             @Valid @RequestBody UpdateProductRequest request
     ) {
@@ -83,11 +87,11 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}")
-    @Operation(summary = "Partially update product", description = "Updates only the provided fields of an existing product")
+    @Operation(summary = "Partially update product", description = "Updates only the provided fields provided in the request")
     public ResponseEntity<ProductResponse> partialUpdate(
     		@Parameter(description = "Product ID", example = "1")
             @PathVariable Long id,
-            @Valid @RequestBody UpdateProductRequest request
+            @Valid @RequestBody PatchProductRequest request
     ) {
         ProductResponse response = productService.partialUpdate(id, request);
 
@@ -97,7 +101,8 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete product", description = "Deletes a product by its ID")
     public ResponseEntity<Void> delete(
-            @Parameter(description = "Product ID", example = "1")
+            @Parameter(description = "Product ID. Must be greater than 0", example = "1")
+            @Positive(message = "Product ID must be greater than 0")
     		@PathVariable Long id
     ) {
         productService.delete(id);

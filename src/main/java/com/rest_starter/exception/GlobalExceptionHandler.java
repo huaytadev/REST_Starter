@@ -8,9 +8,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.method.ParameterErrors;
+import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.rest_starter.dto.response.ErrorResponse;
@@ -20,6 +23,25 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(
+            ResourceNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+	
 	@ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(
             EntityNotFoundException exception,
@@ -49,6 +71,49 @@ public class GlobalExceptionHandler {
 
         for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
             validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                "Validation failed",
+                request.getRequestURI(),
+                validationErrors
+        );
+
+        return ResponseEntity.status(status).body(response);
+    }
+    
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> handleMethodValidationException(
+            HandlerMethodValidationException exception,
+            HttpServletRequest request
+    ) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        Map<String, String> validationErrors = new HashMap<>();
+
+        for (ParameterValidationResult result :
+                exception.getParameterValidationResults()) {
+
+            if (result instanceof ParameterErrors parameterErrors) {
+                for (FieldError fieldError : parameterErrors.getFieldErrors()) {
+                	validationErrors.put(
+                			fieldError.getField(),
+                            fieldError.getDefaultMessage()
+                    );
+                }
+            } else {
+                String parameterName = result.getMethodParameter().getParameterName();
+
+                String message = result.getResolvableErrors().stream()
+                                	.findFirst()
+                                	.get()
+                                	.getDefaultMessage();
+
+                validationErrors.put(parameterName != null ? parameterName : "parameter", message);
+            }
         }
 
         ErrorResponse response = new ErrorResponse(

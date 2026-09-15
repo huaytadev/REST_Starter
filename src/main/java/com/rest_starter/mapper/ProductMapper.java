@@ -3,6 +3,7 @@ package com.rest_starter.mapper;
 import org.springframework.stereotype.Component;
 
 import com.rest_starter.dto.request.CreateProductRequest;
+import com.rest_starter.dto.request.PatchProductRequest;
 import com.rest_starter.dto.request.UpdateProductRequest;
 import com.rest_starter.dto.response.ProductResponse;
 import com.rest_starter.entity.Product;
@@ -44,7 +45,7 @@ public class ProductMapper {
         product.setActive(request.active());
     }
     
-    public void partialUpdate(Product product, UpdateProductRequest request) {
+    public void partialUpdate(Product product, PatchProductRequest request) {
         if (request.name() != null) {
             product.setName(request.name());
         }
