@@ -3,6 +3,7 @@ package com.rest_starter.service;
 import org.springframework.data.domain.Pageable;
 
 import com.rest_starter.dto.request.CreateProductRequest;
+import com.rest_starter.dto.request.PatchProductRequest;
 import com.rest_starter.dto.request.ProductFilterRequest;
 import com.rest_starter.dto.request.UpdateProductRequest;
 import com.rest_starter.dto.response.PageResponse;
@@ -17,7 +18,7 @@ public interface ProductService {
 
     ProductResponse update(Long id, UpdateProductRequest request);
 
-    ProductResponse partialUpdate(Long id, UpdateProductRequest request);
+    ProductResponse partialUpdate(Long id, PatchProductRequest request);
 
     void delete(Long id);
 }

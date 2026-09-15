@@ -5,14 +5,11 @@ import java.math.BigDecimal;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Schema(description = "Request body used to update a product")
-public record UpdateProductRequest(
+@Schema(description = "Request used to partially update an existing product")
+public record PatchProductRequest(
 		@Schema(description = "Product name", example = "Mechanical Keyboard Pro")
-		@NotBlank(message = "Name is required")
         @Size(max = 100, message = "Product name must not exceed 100 characters")
 		String name,
 		
@@ -21,21 +18,17 @@ public record UpdateProductRequest(
 	    String description,
 	    
 	    @Schema(description = "Product price", example = "149.99")
-		@NotNull(message = "Price is required")
         @DecimalMin(value = "0.01", message = "Product price must be greater than 0")
 	    BigDecimal price,
 	    
 	    @Schema(description = "Available stock", example = "15")
-		@NotNull(message = "Stock is required")
         @Min(value = 0, message = "Product stock must be greater than or equal to 0")
 	    Integer stock,
 	    
 	    @Schema(description = "Product category", example = "Peripherals")
-		@NotBlank(message = "Category is required")
         @Size(max = 80, message = "Product category must not exceed 80 characters")
 	    String category,
 	    
         @Schema(description = "Whether the product is active", example = "true")
-		@NotNull(message = "Active is required")
 	    Boolean active
 ) {}

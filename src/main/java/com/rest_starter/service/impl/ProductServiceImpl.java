@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rest_starter.dto.request.CreateProductRequest;
+import com.rest_starter.dto.request.PatchProductRequest;
 import com.rest_starter.dto.request.ProductFilterRequest;
 import com.rest_starter.dto.request.UpdateProductRequest;
 import com.rest_starter.dto.response.PageResponse;
@@ -63,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductResponse partialUpdate(Long id, UpdateProductRequest request) {
+    public ProductResponse partialUpdate(Long id, PatchProductRequest request) {
         Product product = getProductById(id);
         productMapper.partialUpdate(product, request);
         Product updatedProduct = productRepository.save(product);

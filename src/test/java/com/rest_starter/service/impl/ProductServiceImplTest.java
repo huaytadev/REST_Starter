@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.rest_starter.dto.request.CreateProductRequest;
+import com.rest_starter.dto.request.PatchProductRequest;
 import com.rest_starter.dto.request.ProductFilterRequest;
 import com.rest_starter.dto.request.UpdateProductRequest;
 import com.rest_starter.dto.response.PageResponse;
@@ -160,7 +161,7 @@ class ProductServiceImplTest {
 
     @Test
     void partialUpdate_shouldUpdateOnlyProvidedFieldsAndReturnResponse() {
-        UpdateProductRequest request = new UpdateProductRequest(
+        PatchProductRequest request = new PatchProductRequest(
                 "Keyboard Pro",
                 null,
                 null,
@@ -186,7 +187,7 @@ class ProductServiceImplTest {
     @Test
     void partialUpdate_shouldThrowResourceNotFoundException() {
 
-        UpdateProductRequest request = new UpdateProductRequest(
+    	PatchProductRequest request = new PatchProductRequest(
                 "Keyboard Pro",
                 null,
                 null,

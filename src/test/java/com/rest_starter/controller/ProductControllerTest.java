@@ -26,10 +26,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rest_starter.dto.request.CreateProductRequest;
+import com.rest_starter.dto.request.PatchProductRequest;
 import com.rest_starter.dto.request.ProductFilterRequest;
 import com.rest_starter.dto.request.UpdateProductRequest;
 import com.rest_starter.dto.response.PageResponse;
 import com.rest_starter.dto.response.ProductResponse;
+import com.rest_starter.exception.ResourceNotFoundException;
 import com.rest_starter.service.ProductService;
 
 @WebMvcTest(ProductController.class)
@@ -136,25 +138,49 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
     }
+    
+    @Test
+    void updateShouldReturn400WhenRequiredFieldsAreMissing() throws Exception {
+
+        mockMvc.perform(put("/api/products/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "price": 150.00
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+    }
 
     @Test
     void partialUpdate_shouldReturnUpdatedProduct() throws Exception {
-        UpdateProductRequest request = new UpdateProductRequest(
-                "Keyboard Pro",
-                null,
-                null,
-                null,
-                null,
-                null
+        ProductResponse response = new ProductResponse(
+                1L,
+                "Updated Product",
+                "Updated description",
+                new BigDecimal("150.00"),
+                20,
+                "Electronics",
+                true,
+                Instant.now(),
+                Instant.now()
         );
 
-        when(productService.partialUpdate(eq(PRODUCT_ID), any(UpdateProductRequest.class))).thenReturn(productResponse());
+        when(productService.partialUpdate(eq(1L), any(PatchProductRequest.class)))
+                .thenReturn(response);
 
-        mockMvc.perform(patch("/api/products/{id}", PRODUCT_ID)
+        mockMvc.perform(patch("/api/products/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content("""
+                                {
+                                    "price": 150.00
+                                }
+                                """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.price").value(150.00));
     }
 
     @Test
@@ -177,5 +203,21 @@ class ProductControllerTest {
                 Instant.now(),
                 Instant.now()
         );
+    }
+    
+    @Test
+    void findByIdShouldReturn404WhenProductDoesNotExist() throws Exception {
+
+        when(productService.findById(999L))
+                .thenThrow(new ResourceNotFoundException("Product not found with id: 999"));
+
+        mockMvc.perform(get("/api/products/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message")
+                        .value("Product not found with id: 999"))
+                .andExpect(jsonPath("$.path")
+                        .value("/api/products/999"));
     }
 }
