@@ -11,22 +11,17 @@ import io.swagger.v3.oas.models.info.Info;
 public class OpenApiConfig {
     @Bean
     public OpenAPI restStarterOpenApi() {
-//        Server localServer = new Server()
-//                .url("http://localhost:8080")
-//                .description("Local development server");
-
         Contact contact = new Contact()
                 .name("REST Starter API")
                 .email("huaytadev@gmail.com");
 
         Info info = new Info()
                 .title("REST Starter API")
-                .version("1.0.0")
+                .version("1.3.0")
                 .description("Professional REST API for product management with CRUD, validations, filtering, pagination and sorting.")
                 .contact(contact);
 
         return new OpenAPI()
                 .info(info);
-//                .servers(List.of(localServer));
-    }
+        }
 }
