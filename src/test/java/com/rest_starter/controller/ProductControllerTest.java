@@ -2,6 +2,7 @@ package com.rest_starter.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -92,6 +93,45 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Keyboard"));
     }
+    
+    @Test
+    void findById_shouldReturnBadRequestWhenIdIsInvalid() throws Exception {
+
+        mockMvc.perform(get("/api/products/0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+    }
+    
+    @Test
+    void findById_shouldReturnBadRequestWhenIdIsNotNumeric()throws Exception {
+
+        mockMvc.perform(get("/api/products/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message")
+                        .value("Invalid value for parameter: id"))
+                .andExpect(jsonPath("$.path")
+                        .value("/api/products/abc"));
+    }
+    
+    @Test
+    void findByIdShouldReturn404WhenProductDoesNotExist() throws Exception {
+
+        when(productService.findById(999L))
+                .thenThrow(new ResourceNotFoundException("Product not found with id: 999"));
+
+        mockMvc.perform(get("/api/products/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message")
+                        .value("Product not found with id: 999"))
+                .andExpect(jsonPath("$.path")
+                        .value("/api/products/999"));
+    }
 
     @Test
     void findAll_shouldReturnPagedProducts() throws Exception {
@@ -154,6 +194,28 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.error").value("Bad Request"))
                 .andExpect(jsonPath("$.message").value("Validation failed"));
     }
+    
+    @Test
+    void update_shouldReturn404WhenProductDoesNotExist() throws Exception {
+
+        UpdateProductRequest request = new UpdateProductRequest(
+                "Keyboard Pro",
+                "Updated keyboard",
+                BigDecimal.valueOf(150),
+                5,
+                "Peripherals",
+                true
+        );
+
+        when(productService.update(eq(999L),any(UpdateProductRequest.class)))
+        .thenThrow(new ResourceNotFoundException("Product not found with id: 999"));
+
+        mockMvc.perform(put("/api/products/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
+    }
 
     @Test
     void partialUpdate_shouldReturnUpdatedProduct() throws Exception {
@@ -182,6 +244,41 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.price").value(150.00));
     }
+    
+    @Test
+    void partialUpdate_shouldReturn404WhenProductDoesNotExist()throws Exception {
+
+        when(productService.partialUpdate(eq(999L),any(PatchProductRequest.class)))
+        .thenThrow(new ResourceNotFoundException("Product not found with id: 999"));
+
+        mockMvc.perform(patch("/api/products/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "price": 150.00
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"));
+    }
+    
+    @Test
+    void partialUpdate_shouldReturnBadRequestWhenPriceIsInvalid()throws Exception {
+
+        mockMvc.perform(patch("/api/products/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "price": 0
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message")
+                        .value("Validation failed"));
+    }
 
     @Test
     void delete_shouldReturnNoContent() throws Exception {
@@ -206,12 +303,24 @@ class ProductControllerTest {
     }
     
     @Test
-    void findByIdShouldReturn404WhenProductDoesNotExist() throws Exception {
+    void delete_shouldReturnBadRequestWhenIdIsInvalid() throws Exception {
 
-        when(productService.findById(999L))
-                .thenThrow(new ResourceNotFoundException("Product not found with id: 999"));
+        mockMvc.perform(delete("/api/products/0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message")
+                        .value("Validation failed"));
+    }
+    
+    @Test
+    void delete_shouldReturn404WhenProductDoesNotExist() throws Exception {
 
-        mockMvc.perform(get("/api/products/999"))
+        doThrow(new ResourceNotFoundException("Product not found with id: 999"))
+        .when(productService)
+        .delete(999L);
+
+        mockMvc.perform(delete("/api/products/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Not Found"))
@@ -220,4 +329,5 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.path")
                         .value("/api/products/999"));
     }
+
 }

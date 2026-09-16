@@ -112,6 +112,33 @@ class ProductServiceImplTest {
         assertEquals("Keyboard", result.content().get(0).name());
         assertEquals(1, result.totalElements());
     }
+    
+    @Test
+    void findAll_shouldReturnEmptyPageWhenNoProductsExist() {
+        ProductFilterRequest filter =
+                new ProductFilterRequest(
+                        null,
+                        null,
+                        null,
+                        null,
+                        true
+                );
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(productRepository.findAll(ArgumentMatchers.
+        		<Specification<Product>>any(),eq(pageable)))
+        .thenReturn(new PageImpl<>(
+                List.of(),
+                pageable,
+                0
+        ));
+
+        PageResponse<ProductResponse> result = productService.findAll(filter, pageable);
+
+        assertEquals(0, result.content().size());
+        assertEquals(0, result.totalElements());
+    }
 
     @Test
     void update_shouldUpdateProductAndReturnResponse() {
@@ -157,6 +184,29 @@ class ProductServiceImplTest {
                 ResourceNotFoundException.class,
                 () -> productService.update(PRODUCT_ID, request)
         );
+    }
+    
+    @Test
+    void update_shouldNotSaveWhenProductDoesNotExist() {
+
+        UpdateProductRequest request = new UpdateProductRequest(
+                "Keyboard Pro",
+                "Updated keyboard",
+                BigDecimal.valueOf(150),
+                5,
+                "Peripherals",
+                true
+        );
+
+        when(productRepository.findById(PRODUCT_ID))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> productService.update(PRODUCT_ID, request)
+        );
+
+        verify(productRepository, org.mockito.Mockito.never())
+                .save(ArgumentMatchers.any(Product.class));
     }
 
     @Test
@@ -204,6 +254,30 @@ class ProductServiceImplTest {
                 () -> productService.partialUpdate(PRODUCT_ID, request)
         );
     }
+    
+    @Test
+    void partialUpdate_shouldNotSaveWhenProductDoesNotExist() {
+        PatchProductRequest request =
+                new PatchProductRequest(
+                        "Keyboard Pro",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+        when(productRepository.findById(PRODUCT_ID))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> productService.partialUpdate(PRODUCT_ID, request)
+        );
+
+        verify(productRepository, org.mockito.Mockito.never())
+                .save(ArgumentMatchers.any(Product.class));
+    }
 
     @Test
     void delete_shouldDeleteProductWhenExists() {
@@ -226,6 +300,19 @@ class ProductServiceImplTest {
                 ResourceNotFoundException.class,
                 () -> productService.delete(PRODUCT_ID)
         );
+    }
+    
+    @Test
+    void delete_shouldNotDeleteWhenProductDoesNotExist() {
+        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> productService.delete(PRODUCT_ID)
+        );
+
+        verify(productRepository, org.mockito.Mockito.never())
+                .delete(ArgumentMatchers.any(Product.class));
     }
 
     private Product product() {
