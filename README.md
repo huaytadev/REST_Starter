@@ -312,7 +312,9 @@ POST /api/products
 
 <h3>Successful response:</h3>
 
+```
 201 Created
+```
 
 <h3>Example Response:</h3>
 
@@ -340,7 +342,7 @@ POST /api/products
 GET /api/products/{id}
 ```
 
-<h3>Example:<h3>
+<h3>Example:</h3>
 
 ```
 GET /api/products/1
@@ -485,7 +487,7 @@ minPrice=50
 maxPrice=200
 ```
 
-<h3>while this is invalid:</h3>
+<h3>While this is invalid:</h3>
 
 ```
 minPrice=200
